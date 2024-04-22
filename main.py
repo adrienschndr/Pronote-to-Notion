@@ -21,27 +21,51 @@ if client.logged_in:
         database_properties.append(key)
     homeworks = client.homework(datetime.date.today())
 
-    for homework in homeworks:
-        parent = {"database_id": "638d6033-46aa-45b0-a2f7-487ede5aae07"}
-        icon = {"type": "emoji", "emoji": subject_dict[homework.subject.name][1]}
+    # for homework in homeworks:
+    #     parent = {"database_id": "638d6033-46aa-45b0-a2f7-487ede5aae07"}
+    #     icon = {"type": "emoji", "emoji": subject_dict[homework.subject.name][1]}
+    #     properties = {
+    #         "Description": {"rich_text": [{"text": {"content": homework.description}}]},
+    #         "Matière": {"title": [{"text": {"content": subject_dict[homework.subject.name][0]}}]},
+    #         "Date": {"date": {"start": str(homework.date)}}
+    #     }
+    #     #  Le devoir existe-il déjà dans la base de données ?
+    #     already_exists = False
+    #     for database_page in pages:
+    #         if database_page["properties"]["Description"]["rich_text"][0]["text"]["content"] == properties["Description"]["rich_text"][0]["text"]["content"]:
+    #             already_exists = True
+    #             break
+    #     if not already_exists:
+    #         list_attachements = []
+    #         for id_attachement in range(len(homework.files)):
+    #             attachement = homework.files[id_attachement]
+    #             list_attachements.append(attachement)
+    #             if len(list_attachements) >= 1:
+    #                 if "Fichier N°"+str(id_attachement) not in database_properties:
+    #                     notion.databases.update("638d6033-46aa-45b0-a2f7-487ede5aae07", properties={"Fichier N°"+str(id_attachement): {"rich_text": {}}})
+    #                 properties["Fichier N°"+str(id_attachement)] = {'id': 'DMX%60', 'type': 'rich_text', 'rich_text': [{'type': 'text', 'text': {'content': str(attachement.name), 'link': {'url': str(attachement.url)}}, 'annotations': {'bold': False, 'italic': False, 'strikethrough': False, 'underline': False, 'code': False, 'color': 'default'}, 'plain_text': 'Test', 'href': str(attachement.url)}]}
+    #         page = notion.pages.create(parent=parent, icon=icon, properties=properties)
+    notes_pages_properties = dict(notion.databases.retrieve("a506dc25223d485aa95ee0b63ae773e0")["properties"])
+    print(notes_pages_properties)
+    dict_moyennes = {}
+    for id_moyenne in client.periods[2].averages:
+        dict_moyennes[str(client.periods[2].averages[id_moyenne].subject.name)] = client.periods[2].averages[id_moyenne].student
+
+    for grade in client.periods[2].grades:
+        print(subject_dict[str(grade.subject.name)][0], "-", grade.comment, ":", grade.grade, "/", grade.out_of)
+        parent = {"database_id": "a506dc25223d485aa95ee0b63ae773e0"}
+        icon = {"type": "emoji", "emoji": subject_dict[grade.subject.name][1]}
         properties = {
-            "Description": {"rich_text": [{"text": {"content": homework.description}}]},
-            "Matière": {"title": [{"text": {"content": subject_dict[homework.subject.name][0]}}]},
-            "Date": {"date": {"start": str(homework.date)}}
+            "Description": {"rich_text": [{"text": {"content": grade.comment}}]},
+            "Note": {"rich_text": [{"text": {"content": str(grade.grade) + "/" + str(grade.out_of)}}]},
+            "Matière": {"title": [{"text": {"content": (str(subject_dict[grade.subject.name][0]) + " - " + str(dict_moyennes[grade.subject.name]))}}]},
+            "Date": {"date": {"start": str(grade.date)}}
         }
         #  Le devoir existe-il déjà dans la base de données ?
-        already_exists = False
         for database_page in pages:
             if database_page["properties"]["Description"]["rich_text"][0]["text"]["content"] == properties["Description"]["rich_text"][0]["text"]["content"]:
                 already_exists = True
                 break
-        if not already_exists:
-            list_attachements = []
-            for id_attachement in range(len(homework.files)):
-                attachement = homework.files[id_attachement]
-                list_attachements.append(attachement)
-                if len(list_attachements) >= 1:
-                    if "Fichier N°"+str(id_attachement) not in database_properties:
-                        notion.databases.update("638d6033-46aa-45b0-a2f7-487ede5aae07", properties={"Fichier N°"+str(id_attachement): {"rich_text": {}}})
-                    properties["Fichier N°"+str(id_attachement)] = {'id': 'DMX%60', 'type': 'rich_text', 'rich_text': [{'type': 'text', 'text': {'content': str(attachement.name), 'link': {'url': str(attachement.url)}}, 'annotations': {'bold': False, 'italic': False, 'strikethrough': False, 'underline': False, 'code': False, 'color': 'default'}, 'plain_text': 'Test', 'href': str(attachement.url)}]}
-            page = notion.pages.create(parent=parent, icon=icon, properties=properties)
+        page = notion.pages.create(parent=parent, icon=icon, properties=properties)
+    print("Moyenne générale :", client.periods[2].overall_average)
+

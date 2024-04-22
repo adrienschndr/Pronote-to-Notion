@@ -5,6 +5,7 @@ subject_dict = {
     "ANGLAIS LV1": ["Anglais", "🇬🇧"],
     "HISTOIRE-GEOGRAPHIE": ["Histoire-Géo", "🏛️"],
     "ENSEIGN.SCIENTIFIQUE": ["Ens. Sci.", "⚗️"],
+    "ENSEIGN.SCIENTIFIQUE > ENSEIGN.SCIENTIFIQUE": ["Ens. Sci.", "⚗️"],
     "PHILOSOPHIE": ["Philosophie", "💭"],
     "VIE DE CLASSE": ["Vie de Classe", "ℹ️"],
     "MATHS EXPERTES": ["Maths Exp.", "🔣"],
