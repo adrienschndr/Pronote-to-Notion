@@ -2,7 +2,7 @@ from imports import *
 
 
 def creer_devoir_notion(homework):
-    parent = {"database_id": "638d6033-46aa-45b0-a2f7-487ede5aae07"}
+    parent = {"database_id": infos_persos["database_uuid"]}
     icon = {"type": "emoji", "emoji": subject_dict[homework.subject.name][1]}
     properties = {
         "Description": {"rich_text": [{"text": {"content": homework.description}}]},
@@ -24,7 +24,7 @@ def creer_devoir_notion(homework):
             list_attachements.append(attachement)
             if len(list_attachements) >= 1:
                 if "Fichier N°" + str(id_attachement) not in database_properties:
-                    notion.databases.update("638d6033-46aa-45b0-a2f7-487ede5aae07",
+                    notion.databases.update(infos_persos["database"],
                                             properties={"Fichier N°" + str(id_attachement): {"rich_text": {}}})
                 properties["Fichier N°" + str(id_attachement)] = {'id': 'DMX%60', 'type': 'rich_text', 'rich_text': [
                     {'type': 'text', 'text': {'content': str(attachement.name), 'link': {'url': str(attachement.url)}},
@@ -35,9 +35,9 @@ def creer_devoir_notion(homework):
 
 
 if client.logged_in:
-    pages = notion.databases.query("638d6033-46aa-45b0-a2f7-487ede5aae07").get("results")
+    pages = notion.databases.query(infos_persos["database_uuid"]).get("results")
     database_properties = []
-    properties = dict(notion.databases.retrieve("638d6033-46aa-45b0-a2f7-487ede5aae07")["properties"])
+    properties = dict(notion.databases.retrieve(infos_persos["database_uuid"])["properties"])
     for key in properties.keys():
         database_properties.append(key)
     homeworks = client.homework(datetime.date.today())
