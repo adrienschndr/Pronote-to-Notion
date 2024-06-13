@@ -1,21 +1,7 @@
-import notion_client
-import pronotepy
-import datetime
-from subjects import subject_dict
-from pronotepy.ent import ile_de_france
-from dotenv import dotenv_values
-
-infos_persos = dotenv_values(".env")
-
-client = pronotepy.Client(pronote_url=infos_persos["pronote_url"],
-                          username=infos_persos["username"],
-                          password=infos_persos["pronote_url"],
-                          ent=infos_persos["region"])
-
-notion = notion_client.Client(auth=infos_persos["token"])
+from imports import *
 
 
-def creer_devoir(homework):
+def creer_devoir_notion(homework):
     parent = {"database_id": "638d6033-46aa-45b0-a2f7-487ede5aae07"}
     icon = {"type": "emoji", "emoji": subject_dict[homework.subject.name][1]}
     properties = {
@@ -28,7 +14,7 @@ def creer_devoir(homework):
     for database_page in pages:
         description_devoir_notion = database_page["properties"]["Description"]["rich_text"][0]["text"]["content"]
         description_devoir_pronote = properties["Description"]["rich_text"][0]["text"]["content"]
-        if description_devoir_notion == description_devoir_notion:
+        if description_devoir_notion == description_devoir_pronote:
             already_exists = True
             break
     if not already_exists:
@@ -57,8 +43,4 @@ if client.logged_in:
     homeworks = client.homework(datetime.date.today())
 
     for homework in homeworks:
-        creer_devoir(homework)
-
-
-
-
+        creer_devoir_notion(homework)
